@@ -36,10 +36,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (mounted) setState(() {});
   }
 
-  void _launchDonateUrl() async {
+  void _launchCoffeeUrl() async {
     final Uri url = Uri.parse('https://ko-fi.com/abderridr');
     if (!await launchUrl(url)) {
-      debugPrint('Could not launch donate url');
+      debugPrint('Could not launch coffee url');
     }
   }
 
@@ -176,11 +176,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 const SizedBox(height: 20),
 
-                // Donate Button
+                // Buy me a coffee Button
                 _buildMenuButton(
-                  "DONATE",
+                  "Buy me a coffee",
                   Icons.coffee_rounded,
-                  _launchDonateUrl,
+                  _launchCoffeeUrl,
                 ).animate().fade(delay: 1000.ms).slideY(begin: 0.5),
               ],
             ),
