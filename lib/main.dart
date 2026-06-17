@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'ads/ad_manager.dart';
 import 'home/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await MobileAds.instance.initialize();
   AdManager().initialize(); // Preload ads
 
   runApp(const WordleApp());
