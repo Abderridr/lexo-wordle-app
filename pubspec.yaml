@@ -2,7 +2,7 @@ name: lexo_wordleapp
 description: "lexo wordle appp."
 publish_to: 'none'
 
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   sdk: ^3.0.0
