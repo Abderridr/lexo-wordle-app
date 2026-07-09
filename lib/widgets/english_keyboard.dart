@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../game/game_logic.dart';
 
 class EnglishKeyboard extends StatelessWidget {
@@ -9,12 +8,12 @@ class EnglishKeyboard extends StatelessWidget {
   final Function(String) onKeyTap;
 
   const EnglishKeyboard({
-    Key? key,
+    super.key,
     required this.game,
     required this.onBackspace,
     required this.onConfirm,
     required this.onKeyTap,
-  }) : super(key: key);
+  });
 
   static const List<List<String>> keys = [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
@@ -36,7 +35,7 @@ class EnglishKeyboard extends StatelessWidget {
             }, flex: 2),
             ...keys[2].map(
               (letter) => _buildKey(letter)
-            ).toList(),
+            ),
             _buildActionButton("⌫", () {
               onBackspace();
             }, flex: 2),

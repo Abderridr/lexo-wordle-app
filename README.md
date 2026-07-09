@@ -2,14 +2,14 @@
   <img src="logo.jpg" width="150" height="150" />
 </p>
 
-# LeXo - Premium Wordle Experience
+# LeXo - Premium Word Puzzle Experience
 
-LeXo is a modern, high-polish take on the classic Wordle game, built with Flutter. It combines the addictive logic of word puzzles with a stunning **Aqua Skeuomorphic** design and premium user experience.
+LeXo is a modern, high-polish take on the classic word puzzle game, built with Flutter. It combines the addictive logic of word puzzles with a stunning **Aqua Skeuomorphic** design and premium user experience.
 
 ## ✨ Features
 
 ### 🎮 Multiple Game Modes
-- **Daily Wordle**: Join players worldwide in solving a single, unique word every 24 hours.
+- **Daily Puzzle**: Join players worldwide in solving a single, unique word every 24 hours.
 - **Free Play**: Unlimited practice! Play as many words as you want to sharpen your skills.
 
 ### 🎨 Visual Excellence
@@ -44,7 +44,7 @@ LeXo is a modern, high-polish take on the classic Wordle game, built with Flutte
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/Abderridr/lexo-wordle-app.git
+   git clone https://github.com/Abderridr/lexo-puzzle.git
    ```
 
 2. **Install dependencies**:

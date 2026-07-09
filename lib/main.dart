@@ -8,16 +8,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AdManager().initialize(); // Preload ads
 
-  runApp(const WordleApp());
+  runApp(const LexoApp());
 }
 
-class WordleApp extends StatelessWidget {
-  const WordleApp({Key? key}) : super(key: key);
+class LexoApp extends StatelessWidget {
+  const LexoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Wordle',
+      title: 'LeXo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.light,

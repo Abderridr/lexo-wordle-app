@@ -4,7 +4,7 @@ import 'package:confetti/confetti.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'game_logic.dart';
-import 'word_list.dart';
+
 import '../ads/ad_manager.dart';
 import '../widgets/game_grid.dart';
 import '../widgets/english_keyboard.dart';
@@ -13,7 +13,7 @@ import '../help/help_screen.dart';
 
 class GameScreen extends StatefulWidget {
   final bool isFreePlay;
-  const GameScreen({Key? key, this.isFreePlay = false}) : super(key: key);
+  const GameScreen({super.key, this.isFreePlay = false});
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -105,9 +105,8 @@ class _GameScreenState extends State<GameScreen> {
       AdManager().showInterstitialAd();
     }
 
-    // Show meaning dialog
-    String meaning = wordMeanings[game.dailyWord] ?? "No meaning available.";
     
+
     if (!mounted) return;
     
     showDialog(
@@ -295,9 +294,9 @@ class _GameScreenState extends State<GameScreen> {
   void _requestHint() {
     if (game.isGameOver || game.hintsUsed >= GameLogic.maxHints) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("No more hints available"),
-          backgroundColor: const Color(0xFFFF4D6D),
+        const SnackBar(
+          content: Text("No more hints available"),
+          backgroundColor: Color(0xFFFF4D6D),
         ),
       );
       return;
@@ -320,7 +319,7 @@ class _GameScreenState extends State<GameScreen> {
     return Scaffold(
       // Background inherits from theme
       appBar: AppBar(
-        title: Text(widget.isFreePlay ? "FREE PLAY" : "DAILY WORDLE", 
+        title: Text(widget.isFreePlay ? "FREE PLAY" : "DAILY PUZZLE", 
             style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2)),
         centerTitle: true,
         elevation: 0,

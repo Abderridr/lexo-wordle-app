@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
 import 'word_list.dart';
 import '../data/answers.dart';
 import '../data/dictionary.dart';
@@ -62,45 +61,67 @@ class GameLogic extends ChangeNotifier {
     notifyListeners();
   }
 
+  int _getCurrentDayIndex() {
+    final now = DateTime.now().toUtc();
+    final today = DateTime.utc(now.year, now.month, now.day);
+    final epoch = DateTime.utc(1970, 1, 1);
+    return today.difference(epoch).inDays;
+  }
+
   void _initializeGame() async {
-    // Always load global stats so they are available in all modes
-    await _loadStats();
-    
-    if (isFreePlay) {
-      // Pick random word from answers
-      final random = Random();
-      dailyWord = answers[random.nextInt(answers.length)];
-      dailyWord = normalizeWord(dailyWord);
-      notifyListeners();
-    } else {
-      // Daily logic
-      int daysSinceEpoch = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(0)).inDays;
-      dailyWord = answers[daysSinceEpoch % answers.length];
-      dailyWord = normalizeWord(dailyWord);
-      await _loadDailyState(daysSinceEpoch);
+    try {
+      // Always load global stats so they are available in all modes
+      await _loadStats();
+      
+      if (isFreePlay) {
+        // Pick random word from answers
+        final random = Random();
+        dailyWord = answers[random.nextInt(answers.length)];
+        dailyWord = normalizeWord(dailyWord);
+        notifyListeners();
+      } else {
+        // Daily logic
+        int daysSinceEpoch = _getCurrentDayIndex();
+        dailyWord = answers[daysSinceEpoch % answers.length];
+        dailyWord = normalizeWord(dailyWord);
+        await _loadDailyState(daysSinceEpoch);
+        notifyListeners();
+      }
+    } catch (e, stack) {
+      debugPrint("Error initializing game: $e\n$stack");
+      // Fallback in case of initialization failure
+      dailyWord = answers[0];
       notifyListeners();
     }
   }
 
   Future<void> _loadStats() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    gamesPlayed = prefs.getInt('totalPlayed') ?? 0;
-    gamesWon = prefs.getInt('totalWon') ?? 0;
-    currentStreak = prefs.getInt('streak') ?? 0;
-    maxStreak = prefs.getInt('maxStreak') ?? 0;
-    for (int i = 0; i < 6; i++) {
-      guessDistribution[i] = prefs.getInt('dist_$i') ?? 0;
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      gamesPlayed = prefs.getInt('totalPlayed') ?? 0;
+      gamesWon = prefs.getInt('totalWon') ?? 0;
+      currentStreak = prefs.getInt('streak') ?? 0;
+      maxStreak = prefs.getInt('maxStreak') ?? 0;
+      for (int i = 0; i < 6; i++) {
+        guessDistribution[i] = prefs.getInt('dist_$i') ?? 0;
+      }
+    } catch (e, stack) {
+      debugPrint("Error loading stats: $e\n$stack");
     }
   }
 
   Future<void> _saveStats() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('totalPlayed', gamesPlayed);
-    await prefs.setInt('totalWon', gamesWon);
-    await prefs.setInt('streak', currentStreak);
-    await prefs.setInt('maxStreak', maxStreak);
-    for (int i = 0; i < 6; i++) {
-      await prefs.setInt('dist_$i', guessDistribution[i]);
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('totalPlayed', gamesPlayed);
+      await prefs.setInt('totalWon', gamesWon);
+      await prefs.setInt('streak', currentStreak);
+      await prefs.setInt('maxStreak', maxStreak);
+      for (int i = 0; i < 6; i++) {
+        await prefs.setInt('dist_$i', guessDistribution[i]);
+      }
+    } catch (e, stack) {
+      debugPrint("Error saving stats: $e\n$stack");
     }
   }
 
@@ -110,44 +131,52 @@ class GameLogic extends ChangeNotifier {
   }
 
   Future<void> _loadDailyState(int dayIndex) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int lastPlayedDay = prefs.getInt('lastPlayedDay') ?? -1;
-    if (lastPlayedDay == dayIndex) {
-      // Load progress
-      guesses = prefs.getStringList('guesses_$dayIndex') ?? [];
-      isGameOver = prefs.getBool('isGameOver_$dayIndex') ?? false;
-      isWinner = prefs.getBool('isWinner_$dayIndex') ?? false;
-      hintsUsed = prefs.getInt('hintsUsed_$dayIndex') ?? 0;
-      hintedIndices = (prefs.getStringList('hintedIndices_$dayIndex') ?? [])
-          .map((e) => int.parse(e))
-          .toList();
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int lastPlayedDay = prefs.getInt('lastPlayedDay') ?? -1;
+      if (lastPlayedDay == dayIndex) {
+        // Load progress
+        guesses = prefs.getStringList('guesses_$dayIndex') ?? [];
+        isGameOver = prefs.getBool('isGameOver_$dayIndex') ?? false;
+        isWinner = prefs.getBool('isWinner_$dayIndex') ?? false;
+        hintsUsed = prefs.getInt('hintsUsed_$dayIndex') ?? 0;
+        hintedIndices = (prefs.getStringList('hintedIndices_$dayIndex') ?? [])
+            .map((e) => int.parse(e))
+            .toList();
 
-      // Rebuild letter states from previous guesses
-      for (var guess in guesses) {
-        _updateLetterStates(guess);
+        // Rebuild letter states from previous guesses
+        for (var guess in guesses) {
+          _updateLetterStates(guess);
+        }
+      } else {
+        // New day, clear old progress if needed (could be kept for history, but ignored for daily state)
+        // If user lost streak by skipping a day
+        if (lastPlayedDay != -1 && dayIndex - lastPlayedDay > 1) {
+          currentStreak = 0;
+          await _saveStats();
+        }
       }
-    } else {
-      // New day, clear old progress if needed (could be kept for history, but ignored for daily state)
-      // If user lost streak by skipping a day
-      if (lastPlayedDay != -1 && dayIndex - lastPlayedDay > 1) {
-        currentStreak = 0;
-        await _saveStats();
-      }
+    } catch (e, stack) {
+      debugPrint("Error loading daily state: $e\n$stack");
     }
   }
 
   Future<void> _saveDailyState() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int daysSinceEpoch = DateTime.now().difference(DateTime.utc(2023, 1, 1)).inDays;
-    prefs.setInt('lastPlayedDay', daysSinceEpoch);
-    prefs.setStringList('guesses_$daysSinceEpoch', guesses);
-    prefs.setBool('isGameOver_$daysSinceEpoch', isGameOver);
-    prefs.setBool('isWinner_$daysSinceEpoch', isWinner);
-    prefs.setInt('hintsUsed_$daysSinceEpoch', hintsUsed);
-    prefs.setStringList(
-      'hintedIndices_$daysSinceEpoch',
-      hintedIndices.map((e) => e.toString()).toList(),
-    );
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int daysSinceEpoch = _getCurrentDayIndex();
+      await prefs.setInt('lastPlayedDay', daysSinceEpoch);
+      await prefs.setStringList('guesses_$daysSinceEpoch', guesses);
+      await prefs.setBool('isGameOver_$daysSinceEpoch', isGameOver);
+      await prefs.setBool('isWinner_$daysSinceEpoch', isWinner);
+      await prefs.setInt('hintsUsed_$daysSinceEpoch', hintsUsed);
+      await prefs.setStringList(
+        'hintedIndices_$daysSinceEpoch',
+        hintedIndices.map((e) => e.toString()).toList(),
+      );
+    } catch (e, stack) {
+      debugPrint("Error saving daily state: $e\n$stack");
+    }
   }
 
   void addLetter(String letter) {

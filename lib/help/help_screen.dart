@@ -3,7 +3,7 @@ import '../widgets/tile.dart';
 import '../game/game_logic.dart';
 
 class HelpScreen extends StatelessWidget {
-  const HelpScreen({Key? key}) : super(key: key);
+  const HelpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class HelpScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Text(
-              "Guess the Wordle in 6 tries.\n\n"
+              "Guess the word in 6 tries.\n\n"
               "Each guess must be a valid 5-letter word. Hit the enter button to submit.\n\n"
               "After each guess, the color of the tiles will change to show how close your guess was to the word.",
               style: TextStyle(color: Color(0xFF333333), fontSize: 16),

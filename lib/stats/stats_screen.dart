@@ -4,7 +4,7 @@ import '../game/game_logic.dart';
 class StatsScreen extends StatelessWidget {
   final GameLogic game;
 
-  const StatsScreen({Key? key, required this.game}) : super(key: key);
+  const StatsScreen({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {

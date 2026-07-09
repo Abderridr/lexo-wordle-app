@@ -10,12 +10,12 @@ class Tile extends StatefulWidget {
   final Duration delay;
 
   const Tile({
-    Key? key,
+    super.key,
     required this.letter,
     required this.color,
     this.animate = false,
     this.delay = Duration.zero,
-  }) : super(key: key);
+  });
 
   @override
   State<Tile> createState() => _TileState();
@@ -30,7 +30,6 @@ class _TileState extends State<Tile> with SingleTickerProviderStateMixin {
 
     Color bgColor = Colors.transparent;
     Color borderColor = const Color(0xFFD3D3D3); // Lighter border for light theme
-    double borderGlow = 0.0;
 
     switch (color) {
       case LetterColor.correct:

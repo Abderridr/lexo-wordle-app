@@ -5,7 +5,7 @@ import 'tile.dart';
 
 class GameGrid extends StatelessWidget {
   final GameLogic game;
-  const GameGrid({Key? key, required this.game}) : super(key: key);
+  const GameGrid({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {
