@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../game/game_screen.dart';
 import '../game/game_logic.dart';
 import '../ads/ad_manager.dart';
@@ -34,13 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onGameChanged() {
     if (mounted) setState(() {});
-  }
-
-  void _launchCoffeeUrl() async {
-    final Uri url = Uri.parse('https://ko-fi.com/abderridr');
-    if (!await launchUrl(url)) {
-      debugPrint('Could not launch coffee url');
-    }
   }
 
   void _showHelp() {
@@ -173,15 +165,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icons.calendar_today_rounded,
                   () => _navigateToGame(isFreePlay: false),
                 ).animate().fade(delay: 800.ms).slideY(begin: 0.5),
-
-                const SizedBox(height: 20),
-
-                // Buy me a coffee Button
-                _buildMenuButton(
-                  "Buy me a coffee",
-                  Icons.coffee_rounded,
-                  _launchCoffeeUrl,
-                ).animate().fade(delay: 1000.ms).slideY(begin: 0.5),
               ],
             ),
           ),
